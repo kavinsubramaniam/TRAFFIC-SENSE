@@ -4,7 +4,7 @@ from data_ingestion.steps.video_to_frame_step import video_to_frame_step
 from data_ingestion.steps.uploading_frames_step import uploading_frames_step
 
 @pipeline(name="data_ingestion_pipeline_v2")
-def data_ingestion_pipeline():
+def data_ingestion_pipeline(skip_frames):
     video_paths = video_indexing_step(
         prefix="raw_videos",
         tag_key="data_category",
@@ -13,7 +13,7 @@ def data_ingestion_pipeline():
 
     frame_paths = video_to_frame_step(
         video_paths=video_paths,
-        skip_frames=100,
+        skip_frames=skip_frames,
         output_dir="frames_for_labeling"
     )
 

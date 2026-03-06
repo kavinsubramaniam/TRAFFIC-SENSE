@@ -1,0 +1,12 @@
+names:
+- two_wheeler
+nc: 1
+roboflow:
+  license: MIT
+  project: two-wheeler-detection-uyzmj
+  url: https://universe.roboflow.com/kavinsubramaniam/two-wheeler-detection-uyzmj/dataset/3
+  version: 3
+  workspace: kavinsubramaniam
+test: ../test/images
+train: ../train/images
+val: ../valid/images

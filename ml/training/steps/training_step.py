@@ -51,15 +51,31 @@ MLFLOW_EXPERIMENT   = "YOLO-Custom-Training"
 # 3.  Helper – parse Ultralytics results
 # ─────────────────────────────────────────────
 def parse_results(results):
-    """Extract scalar metrics from a YOLO Results object."""
+    """Extract scalar metrics from a YOLO Results object and sanitize names for MLflow."""
+    
+    def sanitize_key(key: str) -> str:
+        """Make metric names MLflow-safe."""
+        return (
+            key.replace("(", "_")
+               .replace(")", "")
+               .replace(" ", "_")
+        )
+
     metrics = {}
+
+    # Extract YOLO metrics
     if hasattr(results, "results_dict"):
-        metrics.update({k: float(v) for k, v in results.results_dict.items()
-                        if isinstance(v, (int, float))})
-    # speed
+        for k, v in results.results_dict.items():
+            if isinstance(v, (int, float)):
+                clean_key = sanitize_key(k)
+                metrics[clean_key] = float(v)
+
+    # Extract speed metrics
     if hasattr(results, "speed"):
         for k, v in results.speed.items():
-            metrics[f"speed/{k}"] = float(v)
+            clean_key = sanitize_key(k)
+            metrics[f"speed/{clean_key}"] = float(v)
+
     return metrics
 
 

@@ -1,0 +1,7 @@
+mlflow
+zenml[server]
+ultralytics
+dotenv
+roboflow
+minio
+fastapi[standard]

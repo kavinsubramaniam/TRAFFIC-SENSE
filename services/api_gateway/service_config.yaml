@@ -1,0 +1,12 @@
+service-list: 
+
+  api_gateway:
+    container_name: api_gateway
+    build: ./services/api_gateway
+    port: 8000
+  
+  user_service:
+    container_name: user_service
+    build: ./services/user_service
+    port: 8001
+

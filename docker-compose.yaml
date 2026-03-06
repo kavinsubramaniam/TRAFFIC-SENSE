@@ -56,7 +56,58 @@ services:
       - ./data/minio_data:/data
     restart: unless-stopped
 
+  # -------------------------
+  # PostgreSQL
+  # -------------------------
+  postgres:
+    image: postgres:16
+    container_name: trafficsense_postgres
+    restart: unless-stopped
 
-volumes:
-  kafka_data:
-  minio_data:
+    environment:
+      POSTGRES_USER: trafficsense_user
+      POSTGRES_PASSWORD: trafficsense_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+      - ./data/init-db:/docker-entrypoint-initdb.d
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trafficsense_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+
+  # --------------------------
+  # MySQL (for ZenML)
+  # --------------------------
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    restart: unless-stopped
+    volumes:
+      - ./data/mysql_data:/var/lib/mysql
+
+
+  # --------------------------
+  # ZenML Server
+  # --------------------------
+  zenml:
+    image: zenmldocker/zenml-server
+    ports:
+      - "8080:8080"
+    environment:
+      - ZENML_STORE_URL=mysql://root:password@mysql/zenml
+    depends_on:
+      mysql:
+        condition: service_started
+    volumes:
+      - ./data/zenml_data:/zenml_data
+    restart: on-failure
+
